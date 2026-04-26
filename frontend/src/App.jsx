@@ -21,10 +21,10 @@ const App = () => {
         <Route path="/about" element={ <About /> }/>
         <Route path="/contact" element={ <Contact /> }/>
         <Route path="/myappointments" element={ <MyAppointments /> }/>
-        <Route path="/appointment/:doctor_name" element={ <Appointment /> }/>
+        <Route path="/appointment/:doc_id" element={ <Appointment /> }/>
         <Route path="/myprofile" element={ <MyProfile /> }/>
         <Route path="/doctors" element={ <Doctors /> }/>
-        <Route path="/doctor/:speciality" element={ <Doctors /> }/>
+        <Route path="/doctors/:speciality" element={ <Doctors /> }/>
         <Route path="/login" element={ <Login /> } />
       </Routes>
       <Footer />
