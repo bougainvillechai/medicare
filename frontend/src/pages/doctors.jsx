@@ -7,6 +7,7 @@ const Doctors = () => {
   const right_list = `w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all duration-200 cursor-pointer hover:bg-primary hover:text-white`;
   console.log(speciality);
   const [filterDoc, setFilterDoc] = useState([]);
+  const [showFilter, setShowFilter] = useState(false);
   const { doctors } = useContext(AppContext);
   const navigate = useNavigate();
 
@@ -45,7 +46,8 @@ const Doctors = () => {
     <div>
       <p className="text-gray-600">Browse through doctors specialist</p>
       <div className="flex flex-col sm:flex-row items-start gap-5 mt-5">
-        <div className="flex flex-col gap-4 text-sm text-gray-600">
+        <button className={`py-1 border px-3 rounded text-sm transition-all sm:hidden ${showFilter ? 'bg-primary text-white':''}`} onClick={()=>setShowFilter(prev =>!prev)}>Filters</button>
+        <div className={`flex flex-col gap-4 text-sm text-gray-600 overflow-hidden transition-all duration-300 ease-in-out ${showFilter ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0 sm:max-h-[800px] sm:opacity-100'}`}>
           {specialities.map((item) => (
             <p key={item} className={`${right_list} ${ speciality === item ? "bg-primary text-white" : "bg-white" }`} onClick={() => handleSpecialityClick(item)}> {item} </p>
           ))}

@@ -18,7 +18,7 @@ const MyProfile = () => {
       <img className="w-36 rounded" src={userData.image} alt="" />
       {isEdit ? (
         <input
-        className="bg-gray-50 text-3xl font-medium max-w-60 mt-4"
+          className="bg-gray-50 text-3xl font-medium max-w-60 mt-4"
           type="text"
           value={userData.name}
           onChange={(e) => setUserData({ ...userData, name: e.target.value })}
@@ -26,15 +26,15 @@ const MyProfile = () => {
       ) : (
         <p className="text-3xl font-medium mt-4 text-neutral-800">{userData.name}</p>
       )}
-      <hr className="bg-zinc-400 h-px border-none"/>
+      <hr className="bg-zinc-400 h-px border-none" />
       <div>
         <p className="text-neutral-500 underline mt-3">CONTACT INFORMATION</p>
-        <div>
-          <p>Email:</p>
-          <p>{userData.email}</p>
-          <p>Phone:</p>
+        <div className="grid grid-cols-[1fr_3fr] gap-y-2.5 mt-3 text-gray-500">
+          <p className="font-medium">Email:</p>
+          <p className="text-blue-500">{userData.email}</p>
+          <p className="font-medium">Phone:</p>
           {isEdit ? (
-            <input
+            <input className="bg-gray-100 max-w-52"
               type="text"
               value={userData.phone}
               onChange={(e) =>
@@ -42,14 +42,15 @@ const MyProfile = () => {
               }
             />
           ) : (
-            <p>{userData.phone}</p>
+            <p className="text-blue-400">{userData.phone}</p>
           )}
-          <p>Address:</p>
+          <p className="font-medium">Address:</p>
           {isEdit ? (
             <p>
               <input
+                className="bg-gray-50"
                 type="text"
-                value={userData.line1}
+                value={userData.address.line1}
                 onChange={(e) =>
                   setUserData({
                     ...userData,
@@ -59,8 +60,9 @@ const MyProfile = () => {
               />{" "}
               <br />{" "}
               <input
+                className="bg-gray-50"
                 type="text"
-                value={userData.line2}
+                value={userData.address.line2}
                 onChange={(e) =>
                   setUserData({
                     ...userData,
@@ -70,7 +72,7 @@ const MyProfile = () => {
               />
             </p>
           ) : (
-            <p>
+            <p className="text-gray-500">
               {userData.address.line1}
               <br /> {userData.address.line2}
             </p>
@@ -78,12 +80,12 @@ const MyProfile = () => {
         </div>
       </div>
       <div>
-        <p>BASIC INFORMATION</p>
-        <div>
-          <p>Gender:</p>
+        <p className="text-neutral-500 underline mt-3">BASIC INFORMATION</p>
+        <div className="grid grid-cols-[1fr_3fr] gap-y-2.5 mt-3">
+          <p className="font-mdium">Gender:</p>
           {
             isEdit ? (
-              <select
+              <select className="max-w-20 bg-gray-100"
                 value={userData.gender}
                 onChange={(e) =>
                   setUserData({ ...userData, gender: e.target.value })
@@ -94,28 +96,30 @@ const MyProfile = () => {
                 <option value="Other">Other</option>
               </select>
             ) : (
-              <p>{userData.gender}</p>
+              <p className="text-gray-400">{userData.gender}</p>
             )
           }
-          <p>Birthday:</p>
+          <p className="font-medium">Birthday:</p>
           {
             isEdit ? (
               <input
+              className="max-w-28 bg-gray-100"
                 type="date"
                 value={userData.dob}
                 onChange={(e) =>
                   setUserData({ ...userData, dob: e.target.value })
                 }
               />
-              ) : (
-              <p>{userData.dob}</p>
+            ) : (
+              <p className="text-gray-400">{userData.dob}</p>
             )
           }
         </div>
       </div>
-      <div>
+      <div className="mt-10">
         {
-          isEdit ? <button onClick={() => setIsEdit(false)}>Save Information</button> : <button onClick={() => setIsEdit(true)}>Edit</button>
+          isEdit ? <button className="border border-primary px-8 py-2 rounded-full hover:bg-primary hover:text-white transition all"   onClick={() => setIsEdit-(false)}>Save Information</button> : <button className="border border-primary px-8 py-2 hover:bg-primary hover:text-white rounded-full transition-all
+          " onClick={() => setIsEdit(true)}>Edit</button>
         }
       </div>
     </div>
