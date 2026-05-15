@@ -4,3 +4,6 @@
   --color-primary: #5f6fff;
   --font-display: "Poppins", sans-serif;
 }
+ ::-webkit-scrollbar {
+  @apply hidden
+}
