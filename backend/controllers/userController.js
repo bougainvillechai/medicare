@@ -2,20 +2,22 @@ import validator from 'validator';
 import bcrypt from 'bcrypt';
 import User from '../models/userModel.js';
 import jwt from 'jsonwebtoken';
-import {v2 as cloudinary} from 'cloudinary';
+import { v2 as cloudinary } from 'cloudinary';
+import doctorModel from '../models/doctorModel.js';
+import appointmentModel from '../models/appointmentModel.js';
 
 //API to regsiter a user
 const registerUser = async (req, res) => {
     try {
         const { name, email, password } = req.body;
         if (!name || !email || !password) {
-            return res.json({success: false, message: 'Please provide name, email and password' });
+            return res.json({ success: false, message: 'Please provide name, email and password' });
         }
         if (!validator.isEmail(email)) {
-            return res.json({success: false, message: 'Please provide a valid email' });
+            return res.json({ success: false, message: 'Please provide a valid email' });
         }
         if (!validator.isLength(password, { min: 8 })) {
-            return res.json({success: false, message: 'Password must be at least 8 characters long' });
+            return res.json({ success: false, message: 'Password must be at least 8 characters long' });
         }
 
         //hashing user pw
@@ -34,7 +36,7 @@ const registerUser = async (req, res) => {
 
 
 
-       
+
     } catch (error) {
         console.error(error);
         res.json({ success: false, message: error.message });
@@ -82,30 +84,98 @@ const getUserProfile = async (req, res) => {
 
 const updateUserProfile = async (req, res) => {
     try {
-        const { userId, name, phone, address, dob, gender} = req.body
+        const { userId, name, phone, address, dob, gender } = req.body
         const imageFile = req.file;
 
-        if(!name  || !phone  || !address  || !dob ){
+        if (!name || !phone || !address || !dob) {
             return res.json({ success: false, message: 'Please provide name, phone, address and dob' });
         }
         await User.findByIdAndUpdate(userId, {
             name,
             phone,
-            address:JSON.parse(address),
-            dob, gender})
-        
-        if(imageFile){
-            const imageUpload = await cloudinary.uploader.upload(imageFile.path, {resource_type:'image'})
+            address: JSON.parse(address),
+            dob, gender
+        })
+
+        if (imageFile) {
+            const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: 'image' })
             const imageUrl = imageUpload.secure_url;
 
-            await User.findByIdAndUpdate(userId, {image: imageUrl})
+            await User.findByIdAndUpdate(userId, { image: imageUrl })
         }
 
-        res.json({ success: true,message:'Profile updated successfully'});
+        res.json({ success: true, message: 'Profile updated successfully' });
     } catch (error) {
         console.error(error);
         res.json({ success: false, message: error.message });
     }
 }
 
-export { registerUser, loginUser, getUserProfile, updateUserProfile };
+
+// API to book appointment
+const bookAppointment = async (req, res) => {
+
+    try {
+
+        const { userId, docId, slotDate, slotTime } = req.body
+
+        const docData = await doctorModel.findById(docId).select('-password')
+
+        if (!docData) {
+    return res.json({ success: false, message: "Doctor not found" });
+}
+
+        if (!docData.available) {
+            return res.json({ success: false, message: 'Doctor not available' })
+        }
+
+        let slots_booked = docData.slots_booked
+
+        // checking for slot availability
+        if (slots_booked[slotDate]) {
+
+            if (slots_booked[slotDate].includes(slotTime)) {
+                return res.json({ success: false, message: 'Slot not available' })
+
+            } else {
+                slots_booked[slotDate].push(slotTime)
+            }
+
+        } else {
+
+            slots_booked[slotDate] = []
+            slots_booked[slotDate].push(slotTime)
+        }
+
+        const userData = await User.findById(userId).select('-password')
+        
+        // Convert to plain object and remove slots_booked so it's not saved in Appointment history
+        const docInfo = docData.toObject()
+        delete docInfo.slots_booked
+
+        const appointmentData = {
+            userId,
+            docId,
+            userData,
+            docData: docInfo,
+            amount: docData.fees,
+            slotTime,
+            slotDate,
+            date: Date.now()
+        }
+
+        const newAppointment = new appointmentModel(appointmentData)
+        await newAppointment.save()
+
+        await doctorModel.findByIdAndUpdate(docId, { slots_booked })
+
+        res.json({ success: true, message: 'Appointment booked successfully' })
+
+    } catch (error) {
+        console.log(error)
+        res.json({ success: false, message: error.message })
+    }
+}
+
+
+export { registerUser, loginUser, getUserProfile, updateUserProfile, bookAppointment };

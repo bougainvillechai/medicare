@@ -5,7 +5,7 @@ import { AppContext } from "../context/AppContext";
 const Doctors = () => {
   const { speciality } = useParams();
   const right_list = `w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all duration-200 cursor-pointer hover:bg-primary hover:text-white`;
-  console.log(speciality);
+  
   const [filterDoc, setFilterDoc] = useState([]);
   const [showFilter, setShowFilter] = useState(false);
   const { doctors } = useContext(AppContext);
