@@ -21,6 +21,10 @@ const Appointment = () => {
   };
 
   const getAvailableSLots = async () => {
+    if (!docInfo) {
+      return;
+    }
+
     setDocSlots([]);
     //getting current date
     let today = new Date();
@@ -48,10 +52,19 @@ const Appointment = () => {
           minute: "2-digit",
           hour12: true,
         });
-        timeslots.push({
-          datetime: new Date(date),
-          time: formattedTime,
-        });
+        let day = date.getDate();
+        let month = date.getMonth() + 1;
+        let year = date.getFullYear();
+        const slotData = day + "_" + month + "_" + year
+        const slotTime = formattedTime
+        const isSlotAvailable = docInfo.slots_booked[slotData] && docInfo.slots_booked[slotData].includes(slotTime) ? false : true
+
+        if (isSlotAvailable) {
+          timeslots.push({
+            datetime: new Date(date),
+            time: formattedTime,
+          })
+        }
         //increment current time by 30min
         date.setMinutes(date.getMinutes() + 30);
       }
@@ -73,19 +86,20 @@ const Appointment = () => {
       let year = date.getFullYear();
       const slotData = day + "_" + month + "_" + year;
 
-      const {data} = await axios.post(backendUrl + '/api/user/book-appointment', {
+      const { data } = await axios.post(backendUrl + '/api/user/book-appointment', {
         docId: doc_id,
         slotDate: slotData,
-        slotTime},{headers: {token}})
+        slotTime
+      }, { headers: { token } })
 
-        if(data.success){
-          toast.success(data.message);
-          getDoctors();
-          navigate('/myappointments');
-        }else {
-          toast.error(data.message);
-        }
-    }catch (error) {
+      if (data.success) {
+        toast.success(data.message);
+        getDoctors();
+        navigate('/myappointments');
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
       toast.error(error.message);
     }
   }
@@ -114,7 +128,7 @@ const Appointment = () => {
             />
           </div>
 
-          <div className="flex-1 border border-gary-400 rounded-lg p-8 py-7 bg-white mx-2 sm:mx-0 mt-[-80px] sm:mt-0">
+          <div className="flex-1 border border-gary-400 rounded-lg p-8 py-7 bg-white mx-2 sm:mx-0 -mt-20 sm:mt-0">
             <p className="flex items-center gap-2 text-2xl font-medium text-gray-900">
               {docInfo.name}
               <img className="w-5" src={assets.verified_icon} alt="" />

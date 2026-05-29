@@ -1,9 +1,10 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import { assets } from "../assets/assets_frontend/assets";
 import { NavLink, useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 const Navbar = () => {
   const navigate = useNavigate();
+  const dropdownRef = useRef(null);
   const [showMenu, setShowMenu] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const { token, setToken, userData} = useContext(AppContext);
@@ -13,6 +14,19 @@ const Navbar = () => {
     localStorage.removeItem('token');
     navigate('/');
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="flex items-center justify-between text-sm py-4 mb-5 border-b border-b-gray-300">
@@ -39,14 +53,15 @@ const Navbar = () => {
       </ul>
       <div className="flex items-center gap-4">
         {token && userData ? (
-          <div onClick={() => setShowDropdown((prev) => !prev)} className="flex items-center gap-4 cursor-pointer relative group">
+          <div ref={dropdownRef} onClick={() => setShowDropdown((prev) => !prev)} className="flex items-center gap-4 cursor-pointer relative group">
             <img className="w-8 rounded-full" src={ userData.image} alt="" />
             <img className="w-2.5" src={assets.dropdown_icon} alt="" />
-            <div className={`absolute top-0 right-0 pt-14 text-base font-medium text-gray-600 z-20 ${showDropdown ? 'block' : 'hidden'} md:group-hover:block`}>
+            <div className={`absolute top-0 right-0 pt-14 text-base font-medium text-gray-600 z-20 ${showDropdown ? 'block' : 'hidden'}`}>
               <div className="min-w-48 bg-dropdown rounded flex flex-col gap-4 p-4">
                 <p
                   onClick={() => {
                     navigate("/myprofile");
+                    setShowDropdown(false);
                   }}
                   className="hover:text-black cursor-pointer"
                 >
@@ -55,6 +70,7 @@ const Navbar = () => {
                 <p
                   onClick={() => {
                     navigate("/myappointments");
+                    setShowDropdown(false);
                   }}
                   className="hover:text-black cursor-pointer"
                 >
@@ -63,6 +79,7 @@ const Navbar = () => {
                 <p
                   onClick={() => {
                     setToken(false);
+                    setShowDropdown(false);
                   }}
                   className="hover:text-black cursor-pointer"
                 >
